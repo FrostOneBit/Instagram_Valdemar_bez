@@ -1,16 +1,12 @@
-import psycopg2
+import sqlite3
 
 from Config import (
-    database,
-    user_db,
-    port_db,
-    password_db,
-    localhost_db
+    database
 )
 
 async def connect_to_database():
     try:
-        connect = psycopg2.connect(dbname=database, user=user_db, password=password_db, host=localhost_db, port=port_db)
+        connect = sqlite3.connect(database)
         cursor = connect.cursor()
         return connect, cursor
     except Exception as ex:
