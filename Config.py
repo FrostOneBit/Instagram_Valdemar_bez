@@ -1,7 +1,6 @@
 import os
 
 from dotenv import load_dotenv
-from webdriver_manager.drivers.firefox import GeckoDriver
 
 load_dotenv()
 

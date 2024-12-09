@@ -1,6 +1,5 @@
+import asyncio
 import sqlite3
-
-from psycopg2 import connect
 
 from Config import (
     database
@@ -13,9 +12,6 @@ async def connect_to_database():
         return connect, cursor
     except Exception as ex:
         print(f"ERROR | connect_to_database: {ex}")
-    finally:
-        cursor.close()
-        connect.close()
 
 async def create_table_for_database():
     try:
@@ -27,7 +23,9 @@ async def create_table_for_database():
             """
             CREATE TABLE IF NOT EXISTS Links (
                 Id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                _author TEXT,
                 _link TEXT,
+                _date_reels TEXT,
                 _data_add TEXT,
                 _caption TEXT,
                 _views TEXT,
@@ -38,12 +36,11 @@ async def create_table_for_database():
             """
         )
 
-        # Применение изменений
-        connect.commit()
-
     except Exception as ex:
         print(f"ERROR | create_table_for_database: {ex}")
 
     finally:
-        # Закрытие соединения
-        connect.close()
+        connect.commit()
+
+
+asyncio.run(create_table_for_database())
