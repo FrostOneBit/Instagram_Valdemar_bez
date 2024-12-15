@@ -2,7 +2,7 @@ import os
 import shutil
 import asyncio
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
@@ -11,6 +11,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+
+from Database import connect_to_database
+from Get_cookies import main_get_cookies
 
 from Config import (
     instagram_login,
@@ -21,7 +24,7 @@ from Config import (
     Geckodriver
 )
 
-async def create_profile_and_login_instagram(path):
+async def create_profile_and_login_instagram():
     try:
         print("=== Начало создания профиля и авторизации в Instagram ===")
 
@@ -39,7 +42,7 @@ async def create_profile_and_login_instagram(path):
         options = Options()
         options.add_argument("-profile")
         options.add_argument(profile_path)
-        options.add_argument("--headless")  # Уберите, если хотите видеть браузер
+        #options.add_argument("--headless")
         print("SUCCESS: Параметры Firefox настроены.")
 
         # Запуск браузера
@@ -101,12 +104,63 @@ async def create_profile_and_login_instagram(path):
             save_info_button.click()
             print("SUCCESS: Кнопка 'Сохранить данные для входа' нажата.")
         except Exception as ex:
-            print(f"ERROR: Кнопка 'Сохранить данные для входа' не найдена: {ex}")
+            print(f"ERROR: Кнопка 'Сохранить данные для входа' не найдена")
 
         print("SUCCESS: Авторизация завершена.")
+        return True
 
     except Exception as ex:
         print(f"ERROR: Ошибка: {ex}")
     finally:
         driver.quit()
         print("INFO: Браузер закрыт.")
+
+        await main_get_cookies() #Получение Cookies
+
+async def insert_or_update_link(donor, link, post_date, post_date_add, caption, views, likes, comments, reposts):
+    try:
+        # Подключаемся к базе данных
+        connect, cursor = await connect_to_database()
+
+        current_date = datetime.now()
+
+        # Проверяем, существует ли ссылка в базе данных
+        cursor.execute("SELECT * FROM Links WHERE _link = ?", (link,))
+        existing_link = cursor.fetchone()
+
+        if existing_link:
+            # Если ссылка уже существует, проверяем дату добавления
+            date_added = datetime.strptime(existing_link[4],"%Y-%m-%d %H:%M:%S")  # _data_add в формате "YYYY-MM-DD HH:MM:SS"
+
+            if current_date - date_added > timedelta(days=10):
+                # Если прошло более 10 дней, удаляем запись
+                cursor.execute("DELETE FROM Links WHERE _link = ?", (link,))
+                print(f"Запись для {link} удалена, так как она старше 10 дней.")
+            else:
+                # Если прошло менее 10 дней, обновляем информацию
+                cursor.execute(
+                    """
+                    UPDATE Links
+                    SET _likes = ?, _views = ?, _count_comments = ?, _reposts = ?
+                    WHERE _link = ?
+                    """,
+                    (likes, views, comments, reposts, link)
+                )
+                print(f"Данные для {link} обновлены.")
+        else:
+            # Если ссылки нет, добавляем новую запись
+            cursor.execute(
+                """
+                INSERT INTO Links (_author, _link, _date_reels, _data_add, _caption, _views, _likes, _count_comments, _reposts)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (donor, link, post_date, post_date_add, caption, views, likes, comments, reposts)
+            )
+            print(f"Новая запись добавлена для {link}. В Database")
+
+    except Exception as ex:
+        print(f"ERROR | Ошибка при работе с базой данных: {ex}")
+    finally:
+        connect.commit()
+        cursor.close()
+        connect.close()

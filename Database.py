@@ -22,7 +22,7 @@ async def create_table_for_database():
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS Links (
-                Id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                Id INTEGET PRIMARY KEY,
                 _author TEXT,
                 _link TEXT,
                 _date_reels TEXT,

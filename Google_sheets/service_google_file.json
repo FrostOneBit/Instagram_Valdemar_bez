@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "warm-dynamics-432408-u0",
+  "private_key_id": "6110ae0d896a557e05cf159f0ed798320de55eac",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC1WbTCCfjFu65L\n3lCXs8GwPfO8vSlA+saTnEWjGLUS1JQaKqb2kk+cL1TXyZt3wAinutqvf+MN+8Vz\nelQKktWNLuhTd+UO+iPkGiBTEwx3P1WtT1AmByo5f4youi5lDTSl0Z3orYWzs6mK\n0KfWxcQiyoVPRkJsDgk7p4bu6x7NnhgowMyUihPz7Go3PdhscaB+wBmCCuua26BH\nBt9wAejPKfDel7Duk6f0fwHn3+FwLxyqlw+rSBKPrpGcs1x4Uo1vPMdwHtYKLJiR\nJAm2A9brx9FTmgDGmR1McH2/Bav+rxEWV8lIhNUoFZRTWG3owV/TCvkidiUbL1Lq\nxIqykc3JAgMBAAECggEAFws6wdFR5ZEErn/7DlvOx94HbmXnARUcoz3J8is95Geo\nw25vYDOVSXZmOd6qElxk0n4W3b11akh3fZtUudyQpZZepS89/Fo4B1Bz57qAQgLa\nmIwp1hCLrVoSKI/dPK/3OamE1D/VwSZE6+5kSrvp7Asp8g8uejE1ESR81o0qkTFH\nT2VxeGEkvER08PmqHK87lnJBd/osvp+P2mqaaRv+SAJSq5XdjGeuEAar9DbPQsan\nCB/rvVHpCbdXZw9tubAJe3fyP7EgsIFFeB2SVLwlnFeMtaTqU2R4awjb///I8wNn\nNa/MPeVkAa6Vqhi3hAsac+j3yo9+C8dz1NFsQlBXRQKBgQD38DYY5FV4daYM/oml\nfahSiewV4vUtHvq+ZPHw1r4kxaba2AjN50BKJqL78Bt04Vufvi4mv4jj/8tAllB7\nOb+HhrcOycJhUo+E23w0pptv2zaZXQq1+MWXb52CngQQLe8w2DXoKlCTuYzuvW5M\nhYKtZVesDIInKKXE2z1mkjBchwKBgQC7Pzr8Ds6gRBYvzcyVhLL6btVZT0Wi/1ut\neHZlcQ2uNgbclXykowLU1OrkbDs5GaJcFBum4cwp/j8TDzbN0qZ6Eqeq/dP0YADS\nX48vUPlGGw4jR15dJZkJ/fGuCPvXWKTraL0vQrHTLrKOd864sQf2gktLF4Mc/MTb\nGWssvfXnLwKBgFGn+ykXik6x8I43Bn5KdDU611Yd+UFzAoHSHRyEnPrfXaSVodCu\naK4DK4pt+Zz024gwymJYkm0EwZvz5W2wBzRLWd609B+5YSsQXke411hvifvYeL6V\nv/2v9OAfypbJig08KATeass8QP4fxUPOdMtGpSk0tWjQKkg7LG2rl+HhAoGARE+U\nEELCpPtR8Myut1l7BhwLH5Lo/8cTRhztbKKq8ARrymuK1nFV5hlrPDwz+ufcMKVx\nVReJKUTE9AoX30zbSSunGZ2ShtPDWPxdu1BaMHZMWRh/V5IQ2/FWCzzhy7VeLTe/\n1Q8K2tVtdMZGl2CWXBs6psGEJr4cfyYt0FvY6ycCgYBiej/qIWnT8v/YvA44xwhQ\npMX/x3txfN4xHaiS4f1J70CjNyYh1ik2YZHjrpOrjYDpaKtdJthvf8c4Hle/noXh\nymwAH+86qJXkgmzr+02Omn6yaQjb2tILC4MIo6bYFPK3rpUOoT5aOJc6ptlekE93\ne6+sdulYpGPJnQapxSuP6w==\n-----END PRIVATE KEY-----\n",
+  "client_email": "google-sheets@warm-dynamics-432408-u0.iam.gserviceaccount.com",
+  "client_id": "106954642566627600164",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets%40warm-dynamics-432408-u0.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
