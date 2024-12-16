@@ -41,6 +41,4 @@ async def create_table_for_database():
 
     finally:
         connect.commit()
-
-
-asyncio.run(create_table_for_database())
+        connect.close()

@@ -1,19 +1,12 @@
-import os
-import shutil
 import asyncio
 import instaloader
-from docs.conf import author
 
-from datetime import datetime, timedelta
+from datetime import datetime
 
-from requests import options
 from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
 
 from Utils import (
     create_profile_and_login_instagram,
@@ -43,7 +36,6 @@ async def launch_parsing():
 
     except Exception as ex:
         print(f"ERROR | background_launch_parsing: {ex}")
-
 
 async def get_reels_link(data_donor):
     try:
@@ -132,7 +124,3 @@ async def get_reels_metadata(unpinned_links):
 
     except Exception as ex:
         print(f"ERROR | get_reels_metadata: {ex}")
-
-#asyncio.run(launch_parsing())
-status_data_donor, data_donor = asyncio.run(google_sheet_read_donor())
-asyncio.run(get_reels_link(data_donor))
