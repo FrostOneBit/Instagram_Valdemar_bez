@@ -125,3 +125,54 @@ async def google_sheet_add_reception(donor, link, post_date, post_date_add, capt
 
     except Exception as ex:
         print(f"ERROR | google_sheet_add_reception: {ex}")
+
+async def google_sheet_add_followers(donor, followers):
+    try:
+        # Задать путь к JSON с учётными данными
+        credentials_file = Google_service_file
+
+        # Определить область действия для авторизации
+        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_name(credentials_file, scope)
+
+        # Авторизация
+        client = gspread.authorize(creds)
+
+        # Указать ID таблицы (можно взять из URL Google Sheets)
+        spreadsheet_id = Google_table
+
+        # Открытие таблицы
+        spreadsheet = client.open_by_key(spreadsheet_id)
+
+        # Поиск листа с авторами
+        author_worksheet = None
+        for worksheet in spreadsheet.worksheets():
+            if worksheet.id == Google_donor:  # Здесь должен быть `gid` листа с авторами
+                author_worksheet = worksheet
+                break
+
+        if not author_worksheet:
+            print(f"Лист с gid {Google_donor} не найден.")
+            return
+
+        # Получаем все данные из листа
+        data = author_worksheet.get_all_records()
+
+        # Поиск строки с указанным автором
+        row_index = None
+        for i, row in enumerate(data, start=2):  # Строки в Google Sheets начинаются с 1, +1 для заголовков
+            if row['Авторы'] == f"https://www.instagram.com/{donor}/":
+                row_index = i
+                break
+
+        if row_index:
+            # Обновляем количество подписчиков
+            author_worksheet.update_cell(row_index, 2, followers)  # Колонка 2 — "Кол-во подписчиков"
+            print(f"Количество подписчиков для {donor} обновлено: {followers}.")
+        else:
+            # Если автор не найден, добавляем новую запись
+            author_worksheet.append_row([f"https://www.instagram.com/{donor}/", followers])
+            print(f"Добавлен новый автор: {donor} с количеством подписчиков {followers}.")
+
+    except Exception as ex:
+        print(f"ERROR | google_sheet_add_followers: {ex}")

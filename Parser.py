@@ -10,12 +10,14 @@ from selenium.webdriver.common.by import By
 
 from Utils import (
     create_profile_and_login_instagram,
-    insert_or_update_link
+    insert_or_update_link,
+    insert_add_or_update_followers
 )
 
 from Utils_GoogleSheets import (
     google_sheet_read_donor,
-    google_sheet_add_reception
+    google_sheet_add_reception,
+    google_sheet_add_followers
 )
 
 from Config import (
@@ -48,7 +50,7 @@ async def get_reels_link(data_donor):
         driver = webdriver.Firefox(service=service, options=option)
 
         try:
-            extracted_links = [link['Автор'] for link in data_donor]
+            extracted_links = [link['Авторы'] for link in data_donor]
 
             for link in extracted_links:
                 driver.get(f"{link}reels/")
@@ -97,11 +99,25 @@ async def get_reels_metadata(unpinned_links):
         loader = instaloader.Instaloader()
         loader.load_session_from_file(filename=Cookies, username=instagram_login)  # Загружаем сессию из файла
 
+        # Мапа для хранения количества подписчиков каждого пользователя
+        donor_followers_count = {}
+
         for link in unpinned_links:
             donor = link.split("/")[3]  # Извлекаем имя пользователя
             shortcode = link.split("/")[-2]  # Извлекаем shortcode рилса
 
             try:
+                # Проверяем, есть ли уже количество подписчиков для этого пользователя в мапе
+                if donor not in donor_followers_count:
+
+                    # Загружаем профиль пользователя и получаем количество подписчиков
+                    profile = instaloader.Profile.from_username(loader.context, donor)
+
+                    followers = profile.followers
+
+                    donor_followers_count[donor] = followers
+                    await insert_add_or_update_followers(donor, followers)
+                    await google_sheet_add_followers(donor, followers)
 
                 # Загружаем пост с использованием shortcode
                 post = instaloader.Post.from_shortcode(loader.context, shortcode)
@@ -115,6 +131,10 @@ async def get_reels_metadata(unpinned_links):
                 comments = post.comments  # Количество комментариев
                 reposts = post.reposts_count if hasattr(post, 'reposts_count') else 0  # Репосты (если атрибут доступен)
 
+                # Получаем количество подписчиков из мапы
+                followers = donor_followers_count[donor]
+
+                # Вставляем или обновляем данные о рилсе и добавляем в Google Sheet
                 await insert_or_update_link(donor, link, post_date, post_date_add, caption, views, likes, comments, reposts)
                 await google_sheet_add_reception(donor, link, post_date, post_date_add, caption, views, likes, comments, reposts)
                 await asyncio.sleep(3)

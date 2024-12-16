@@ -42,7 +42,7 @@ async def create_profile_and_login_instagram():
         options = Options()
         options.add_argument("-profile")
         options.add_argument(profile_path)
-        #options.add_argument("--headless")
+        options.add_argument("--headless")
         print("SUCCESS: Параметры Firefox настроены.")
 
         # Запуск браузера
@@ -163,4 +163,44 @@ async def insert_or_update_link(donor, link, post_date, post_date_add, caption, 
     finally:
         connect.commit()
         cursor.close()
+        connect.close()
+
+async def insert_add_or_update_followers(donor, followers):
+    try:
+        # Подключение к базе данных
+        connect, cursor = await connect_to_database()
+
+        # Проверяем, существует ли уже запись для данного автора
+        cursor.execute("SELECT _followers FROM Donors WHERE _donor = ?", (donor,))
+        existing_record = cursor.fetchone()
+
+        if existing_record:
+            # Если запись существует, обновляем количество подписчиков и время
+            cursor.execute(
+                """
+                UPDATE Donors
+                SET _followers = ?, _last_updated = CURRENT_TIMESTAMP
+                WHERE _donor = ?
+                """,
+                (followers, donor)
+            )
+            print(f"Обновлено количество подписчиков для {donor}: {followers}")
+        else:
+            # Если записи нет, добавляем новую
+            cursor.execute(
+                """
+                INSERT INTO Donors (_donor, _followers)
+                VALUES (?, ?)
+                """,
+                (donor, followers)
+            )
+            print(f"Добавлена новая запись для {donor}: {followers}")
+
+        # Сохраняем изменения
+        connect.commit()
+
+    except Exception as ex:
+        print(f"ERROR | database_add_or_update_followers: {ex}")
+
+    finally:
         connect.close()

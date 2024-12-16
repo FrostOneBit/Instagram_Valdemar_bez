@@ -22,7 +22,7 @@ async def create_table_for_database():
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS Links (
-                Id INTEGET PRIMARY KEY,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
                 _author TEXT,
                 _link TEXT,
                 _date_reels TEXT,
@@ -36,9 +36,20 @@ async def create_table_for_database():
             """
         )
 
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS Donors (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT, -- Уникальный идентификатор записи
+                _donor TEXT UNIQUE,                  -- Имя автора (уникальное)
+                _followers INTEGER,                  -- Количество подписчиков
+                _last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Дата и время последнего обновления
+            )
+            """
+        )
+
+        connect.commit()
     except Exception as ex:
         print(f"ERROR | create_table_for_database: {ex}")
 
     finally:
-        connect.commit()
         connect.close()
