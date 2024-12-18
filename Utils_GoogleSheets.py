@@ -111,6 +111,7 @@ async def google_sheet_add_reception(donor, link, post_date, post_date_add, capt
                 else:
                     # Если прошло менее 10 дней, обновляем информацию
                     row_index = data.index(existing_link_row) + 2  # Строки в Google Sheets начинаются с 1, а не с 0
+                    donor_worksheet.update_cell(row_index, 4, current_date.strftime("%Y-%m-%d %H:%M:%S"))  # Обновляем дату
                     donor_worksheet.update_cell(row_index, 6, views)  # Обновляем просмотры
                     donor_worksheet.update_cell(row_index, 7, likes)  # Обновляем лайки
                     donor_worksheet.update_cell(row_index, 8, comments)  # Обновляем комментарии
