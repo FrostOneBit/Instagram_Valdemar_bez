@@ -1,3 +1,5 @@
+import asyncio
+
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -13,6 +15,14 @@ from datetime import datetime, timedelta
 #Получаем список аккаунтов (Доноров)
 async def google_sheet_read_donor():
     try:
+
+        try:
+            print("Очистка таблицы от страых данных")
+            await google_sheet_clean_receptions()
+            print("Очистка завершена")
+        except Exception as ex:
+            pass
+
         # Задать путь к JSON с учётными данными
         credentials_file = Google_service_file
 
@@ -49,6 +59,7 @@ async def google_sheet_read_donor():
 
 async def google_sheet_add_reception(donor, link, post_date, post_date_add, caption, views, likes, comments, reposts):
     try:
+
         # Задать путь к JSON с учётными данными
         credentials_file = Google_service_file
 
@@ -177,3 +188,63 @@ async def google_sheet_add_followers(donor, followers):
 
     except Exception as ex:
         print(f"ERROR | google_sheet_add_followers: {ex}")
+
+async def google_sheet_clean_receptions(date_column_index=4, days_threshold=10):
+    """
+    Очищает лист Google Sheets, удаляя строки, где дата в указанной колонке превышает заданный порог дней.
+
+    :param date_column_index: индекс столбца с датой обновления (по умолчанию 4, если считать с 1)
+    :param days_threshold: порог в днях для удаления строк
+    """
+    try:
+        # Определить область действия для авторизации
+        scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+        creds = ServiceAccountCredentials.from_json_keyfile_name(Google_service_file, scope)
+
+        # Авторизация
+        client = gspread.authorize(creds)
+
+        # Открытие таблицы
+        spreadsheet = client.open_by_key(Google_table)
+
+        # Поиск листа по gid
+        donor_worksheet = None
+        for worksheet in spreadsheet.worksheets():
+            if worksheet.id == Google_reception:  # `worksheet.id` возвращает gid листа
+                donor_worksheet = worksheet
+                break
+
+        if not donor_worksheet:
+            print("Лист с указанным gid не найден.")
+            return
+
+        # Получение всех данных с листа (без учета заголовков)
+        data = donor_worksheet.get_all_values()  # Получаем все строки, включая заголовки
+        if not data:
+            print("Лист пуст.")
+            return
+
+        # Текущая дата и пороговая дата
+        today = datetime.now()
+        threshold_date = today - timedelta(days=days_threshold)
+
+        # Удаление строк с устаревшими датами
+        rows_to_delete = []
+        for i, row in enumerate(data[1:], start=2):  # start=2, чтобы учесть заголовки
+            try:
+                # Получаем дату из столбца "Дата обновления" (по индексу 4, который соответствует 4-й колонке)
+                update_date = datetime.strptime(row[date_column_index - 1], "%Y-%m-%d %H:%M:%S")  # Индексация с 0
+                # Если дата старше порога, добавляем строку для удаления
+                if update_date < threshold_date:
+                    rows_to_delete.append(i)
+            except ValueError:
+                print(f"Неверный формат даты в строке {i}. Пропускаем.")
+
+        # Удаляем строки в обратном порядке, чтобы не нарушать индексацию
+        for row_index in reversed(rows_to_delete):
+            donor_worksheet.delete_rows(row_index)
+
+        print(f"Удалено {len(rows_to_delete)} строк.")
+
+    except Exception as e:
+        print(f"Ошибка: {e}")

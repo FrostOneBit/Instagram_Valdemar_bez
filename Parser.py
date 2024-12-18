@@ -137,7 +137,7 @@ async def get_reels_metadata(unpinned_links):
                 # Вставляем или обновляем данные о рилсе и добавляем в Google Sheet
                 await insert_or_update_link(donor, link, post_date, post_date_add, caption, views, likes, comments, reposts)
                 await google_sheet_add_reception(donor, link, post_date, post_date_add, caption, views, likes, comments, reposts)
-                await asyncio.sleep(3)
+                await asyncio.sleep(5)
 
             except Exception as ex:
                 print(f"ERROR | Не удалось получить данные по рилсу {shortcode}: {ex}")
